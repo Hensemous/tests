@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Data Entry Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #0078d4; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #005a9e; }
+        .status { font-size: 0.9em; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Shift Entry Test</h2>
+    
+    <label>Line Number</label>
+    <select id="line">
+        <option value="Line 01">Line 01</option>
+        <option value="Line 02">Line 02</option>
+    </select>
+
+    <label>Operator Name</label>
+    <input type="text" id="operator" placeholder="Enter name">
+
+    <label>Quantity Packed</label>
+    <input type="number" id="qty" placeholder="0">
+
+    <button onclick="submitData()" id="submitBtn">Send to SharePoint</button>
+    <div id="status" class="status"></div>
+</div>
+
+<script>
+    async function submitData() {
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        // REPLACE THIS URL with your Power Automate HTTP URL
+        const flowUrl = "YOUR_POWER_AUTOMATE_HTTP_URL_HERE";
+
+        const payload = {
+            line_no: document.getElementById('line').value,
+            operator: document.getElementById('operator').value,
+            quantity: document.getElementById('qty').value,
+            timestamp: new Date().toISOString()
+        };
+
+        btn.disabled = true;
+        status.innerText = "Sending...";
+
+        try {
+            const response = await fetch(flowUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                status.style.color = "green";
+                status.innerText = "Success! Data sent to SharePoint.";
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            status.style.color = "red";
+            status.innerText = "Error: Could not connect to the flow.";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
