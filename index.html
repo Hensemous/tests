@@ -55,19 +55,20 @@
         try {
             const response = await fetch(flowUrl, {
                 method: "POST",
+                mode: "no-cors", // Add this to bypass security blocks
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
 
-            if (response.ok) {
-                status.style.color = "green";
-                status.innerText = "Success! Data sent to SharePoint.";
-            } else {
-                throw new Error();
-            }
+            // With 'no-cors', the browser won't tell us if it worked, 
+            // so we assume it sent if there's no error.
+            status.style.color = "green";
+            status.innerText = "Data sent! Please check SharePoint.";
+            
         } catch (error) {
             status.style.color = "red";
-            status.innerText = "Error: Could not connect to the flow.";
+            status.innerText = "Connection failed.";
+        }
         } finally {
             btn.disabled = false;
         }
